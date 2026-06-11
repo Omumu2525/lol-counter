@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoL カウンターピック検索</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>LoL カウンターピック検索</h1>
+    <p class="subtitle">レーンとチャンピオンを選ぶと、カウンターと「理由」「対策」を表示します</p>
+    <p id="patch-badge" class="patch-badge"></p>
+  </header>
+
+  <main>
+    <!-- STEP 1: レーン選択 -->
+    <section id="lane-section" class="step-section">
+      <h2 class="step-title"><span class="step-num">1</span> レーンを選択</h2>
+      <div id="lane-buttons" class="lane-buttons"></div>
+    </section>
+
+    <!-- STEP 2: チャンピオン選択 -->
+    <section id="champ-section" class="step-section" hidden>
+      <h2 class="step-title"><span class="step-num">2</span> 自分が使う(または相手の)チャンピオンを選択</h2>
+      <div id="champ-grid" class="champ-grid"></div>
+    </section>
+
+    <!-- STEP 3: 結果表示 -->
+    <section id="result-section" class="step-section" hidden>
+      <h2 class="step-title"><span class="step-num">3</span> カウンター情報</h2>
+      <div id="result-header" class="result-header"></div>
+      <div id="counter-list" class="counter-list"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>⚠ カウンター相性はパッチ・ビルド・プレイヤースキルで変動します。本サービスの解説は、パッチに依存しにくい「スキルの仕組み上の相性」を中心に記載しています。</p>
+    <p>※ ボットレーン(ADC/サポート)は2v2のため、相方の組み合わせで相性が大きく変わる点に注意してください。</p>
+    <p class="credit">Champion images: Riot Games Data Dragon. This project is not endorsed by Riot Games.</p>
+  </footer>
+
+  <!-- 基盤(順序固定: core → meta → champions → レーンデータ → app) -->
+  <script src="data/core.js"></script>
+  <script src="data/meta.js"></script>
+  <script src="data/champions.js"></script>
+  <!-- レーン別カウンターデータ(ファイル追加だけで拡張可能) -->
+  <script src="data/top-a.js"></script>
+  <script src="data/top-b.js"></script>
+  <script src="data/jungle-a.js"></script>
+  <script src="data/jungle-b.js"></script>
+  <script src="data/mid-a.js"></script>
+  <script src="data/mid-b.js"></script>
+  <script src="data/adc.js"></script>
+  <script src="data/support-a.js"></script>
+  <script src="data/support-b.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
