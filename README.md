@@ -20,14 +20,25 @@ lol-counter/
     ├── champions.js    ★Data Dragon ID → 日本語名(全チャンピオン)
     ├── top-a.js        トップ A〜K
     ├── top-b.js        トップ M〜Z
+    ├── top-c.js        トップ 追加分(1%基準棚卸し)
     ├── jungle-a.js     ジャングル A〜L
     ├── jungle-b.js     ジャングル L〜Z
+    ├── jungle-c.js     ジャングル 追加分(オフロール系JG等)
     ├── mid-a.js        ミッド A〜L
     ├── mid-b.js        ミッド M〜Z
+    ├── mid-c.js        ミッド 追加分
     ├── adc.js          ボット(ADC)
+    ├── adc-b.js        ボット 追加分(メイジボット等)
     ├── support-a.js    サポート A〜N
-    └── support-b.js    サポート N〜Z
+    ├── support-b.js    サポート N〜Z
+    └── support-c.js    サポート 追加分
 ```
+
+## 収録基準
+
+**当該ロールでのピック率 1.0% 以上**(op.gg Emerald+ 集計、`meta.js` の `pickRateThreshold`)。
+基準未満に落ちたチャンピオンも、一度収録したものは原則残す。
+棚卸し時は op.gg の各ポジション統計(`https://www.op.gg/lol/champions?position=<role>&tier=emerald_plus`)と突き合わせる。
 
 ## データ形式
 

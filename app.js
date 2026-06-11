@@ -90,7 +90,7 @@ function renderResult(champ) {
   list.innerHTML = "";
 
   if (!champ.counters || champ.counters.length === 0) {
-    list.innerHTML = `<div class="empty-note">このチャンピオンのカウンターデータは未登録です。data/ 配下のレーンファイルに追記することで拡張できます。</div>`;
+    list.innerHTML = `<div class="empty-note">このチャンピオンのカウンターデータは未登録です。data/ 配下のロール別ファイルに追記することで拡張できます。</div>`;
     return;
   }
 
