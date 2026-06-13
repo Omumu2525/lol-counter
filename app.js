@@ -95,14 +95,22 @@ function renderResult(champ) {
   }
 
   champ.counters.forEach((c) => {
-    const badgeHtml = {
-      lane: `<span class="badge badge-lane">⚔ レーン戦</span>`,
-      game: `<span class="badge badge-game">🏆 ゲーム全体</span>`,
-    };
+    // バッジは「選択した ${name} 視点での不利フェーズ」を表す
+    const laneBadge = `<span class="badge badge-lane">⚔ ${name}はレーン戦が不利</span>`;
+    const gameBadge = `<span class="badge badge-game">🏆 ${name}は試合が長引くと不利</span>`;
     const badges =
-      c.type === "both" ? badgeHtml.lane + badgeHtml.game : (badgeHtml[c.type] || "");
+      c.type === "both"
+        ? `<span class="badge badge-lane">⚔ ${name}は終始不利</span>`
+        : c.type === "lane"
+        ? laneBadge
+        : c.type === "game"
+        ? gameBadge
+        : "";
+    // wr はカウンター側勝率なので、選択した ${name} 視点に反転して表示
     const wrLabel =
-      typeof c.wr === "number" ? `<span class="wr-label">対面勝率 ${c.wr.toFixed(1)}%</span>` : "";
+      typeof c.wr === "number"
+        ? `<span class="wr-label">${name}の勝率 ${(100 - c.wr).toFixed(1)}%</span>`
+        : "";
     const meta = badges || wrLabel ? `<div class="counter-meta">${badges}${wrLabel}</div>` : "";
 
     const card = document.createElement("article");
