@@ -95,6 +95,16 @@ function renderResult(champ) {
   }
 
   champ.counters.forEach((c) => {
+    const badgeHtml = {
+      lane: `<span class="badge badge-lane">⚔ レーン戦</span>`,
+      game: `<span class="badge badge-game">🏆 ゲーム全体</span>`,
+    };
+    const badges =
+      c.type === "both" ? badgeHtml.lane + badgeHtml.game : (badgeHtml[c.type] || "");
+    const wrLabel =
+      typeof c.wr === "number" ? `<span class="wr-label">対面勝率 ${c.wr.toFixed(1)}%</span>` : "";
+    const meta = badges || wrLabel ? `<div class="counter-meta">${badges}${wrLabel}</div>` : "";
+
     const card = document.createElement("article");
     card.className = "counter-card";
     card.innerHTML = `
@@ -104,6 +114,7 @@ function renderResult(champ) {
         <span class="counter-name">${champName(c.id)}</span>
       </div>
       <div class="counter-body">
+        ${meta}
         <h3 class="reason-title">⚔ カウンターとなる理由</h3>
         <p>${c.reason}</p>
         <h3 class="plan-title">🛡 ${name}側の対策(被害を最小限に抑えるには)</h3>

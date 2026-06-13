@@ -47,7 +47,13 @@ registerCounters("top", [
   {
     id: "Aatrox",                       // Data Dragon ID (champions.js に存在すること)
     counters: [
-      { id: "Fiora", reason: "カウンターとなる理由", plan: "カウンターされる側の対策" },
+      {
+        id: "Fiora",                    // カウンターのID
+        type: "both",                   // "lane"=レーン戦で優位 / "game"=ゲーム全体勝率で優位 / "both"
+        wr: 53.6,                        // カウンター側の対面勝率% (op.gg Emerald+)。取得不可なら省略可
+        reason: "カウンターとなる理由",
+        plan: "カウンターされる側の対策",
+      },
     ],
   },
 ]);
@@ -55,6 +61,9 @@ registerCounters("top", [
 
 - 表示名・画像は `id` から自動解決される(名前をデータに書かない)
 - 解説は「パッチに依存しにくいスキル構造上の相性」を中心に書く方針
+- `type` / `wr` は op.gg Emerald+ の対面勝率と照合して付与:
+  カウンター側勝率 ≥ 51% を「相性成立」とし、レーン戦由来の優位は `lane`/`both`、
+  スケール・集団戦由来は `game`。`wr` はカウンター側から見たマッチアップ勝率(=100−対象側勝率)
 
 ## パッチ更新時の手順
 
