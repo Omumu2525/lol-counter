@@ -47,6 +47,18 @@ body {
   letter-spacing: 0.04em;
 }
 
+.source-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(200, 170, 110, 0.10);
+  color: var(--gold-bright);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+}
+
 main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
 
 .step-section { margin-top: 28px; }
@@ -164,7 +176,89 @@ main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
 .result-header .vs-label { color: var(--text-dim); font-size: 0.85rem; }
 .result-header .target-name { color: var(--gold); font-size: 1.3rem; font-weight: bold; }
 
-.counter-list { display: flex; flex-direction: column; gap: 18px; }
+/* ---- 一覧→詳細(マスター/詳細。モバイルはアコーディオン) ---- */
+.counter-list {
+  display: grid;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.cl-master { display: flex; flex-direction: column; gap: 6px; }
+
+.cl-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 9px;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cl-row:hover { border-color: var(--gold); background: var(--bg-card-hover); }
+.cl-item.open > .cl-row { border-color: var(--gold); background: var(--bg-card-hover); }
+
+.cl-thumb {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--red);
+  object-fit: cover;
+  background: #061021;
+}
+
+.cl-name {
+  font-size: 0.95rem;
+  color: var(--gold-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cl-wr { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; min-width: 118px; }
+.cl-wr b { color: var(--gold); font-size: 0.95rem; }
+.cl-sub { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; letter-spacing: 0.02em; }
+
+.wr-bar {
+  width: 72px; height: 4px;
+  border-radius: 2px;
+  background: #0b1830;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.wr-bar i { display: block; height: 100%; background: var(--gold); }
+
+.cl-chev { display: none; color: var(--text-dim); font-size: 0.8rem; transition: transform 0.15s; }
+
+.cl-inline { display: none; }
+
+.cl-detail {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--red);
+  border-radius: 10px;
+  padding: 18px;
+  align-self: start;
+  position: sticky;
+  top: 16px;
+}
+
+.cd-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.cd-head img {
+  width: 60px; height: 60px;
+  border-radius: 8px;
+  border: 1px solid var(--red);
+  object-fit: cover;
+  background: #061021;
+}
+.cd-name { color: var(--gold-bright); font-weight: bold; font-size: 1.15rem; }
 
 .counter-card {
   background: var(--bg-card);
@@ -265,6 +359,22 @@ main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
 .site-footer .credit { margin-top: 12px; font-size: 0.72rem; opacity: 0.7; }
 
 @media (max-width: 560px) {
+  /* マスター/詳細 → 1カラムのアコーディオンに切替 */
+  .counter-list { grid-template-columns: 1fr; }
+  .cl-detail { display: none; }
+  .cl-chev { display: inline-block; }
+  .cl-item.open .cl-chev { transform: rotate(180deg); }
+  .cl-item.open .cl-inline { display: block; }
+  .cl-inline {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    margin-top: -4px;
+    padding: 6px 14px 14px;
+  }
+
+  /* 旧スキーマ(.counter-card)が残るロール用 */
   .counter-card { grid-template-columns: 1fr; }
   .counter-card .portrait img { width: 80px; height: 80px; }
 }

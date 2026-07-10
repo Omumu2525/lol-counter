@@ -18,6 +18,8 @@ const $ = (sel) => document.querySelector(sel);
 function renderPatchBadge() {
   $("#patch-badge").textContent =
     `分析基準: パッチ ${META.patch}(${META.patchDate} リリース)/ データ更新日: ${META.updated}`;
+  $("#source-badge").textContent =
+    `📊 集計データ: op.gg（ランク: プラチナ以上 / 地域: 全世界）`;
 }
 
 // ---- STEP 1: レーンボタン ----
@@ -74,6 +76,47 @@ function selectChamp(champ) {
 }
 
 // ---- STEP 3: カウンター結果 ----
+// 一覧→詳細のマスター/詳細レイアウト。
+//   デスクトップ: 左に候補一覧(対面勝率のみ)、右に選択中の詳細を表示
+//   モバイル(<=560px): 行をタップでその場にアコーディオン展開(右ペインは非表示)
+
+// 対面勝率を 0〜50%(50%=五分) の固定スケールで可視化するバー(恣意的しきい値は使わない)
+function wrBar(gameWr) {
+  const w = Math.max(0, Math.min(100, (gameWr / 50) * 100));
+  return `<span class="wr-bar"><i style="width:${w.toFixed(0)}%"></i></span>`;
+}
+
+// 1カウンターの詳細(バッジ + 理由 + 対策)。詳細ペインと行内展開で共用
+function counterDetailHTML(name, c) {
+  const chips = [];
+  if (typeof c.gameWr === "number") {
+    chips.push(`<span class="badge badge-game">🏆 ${name}の対面勝率 ${c.gameWr.toFixed(1)}%</span>`);
+  }
+  if (typeof c.laneWr === "number") {
+    chips.push(`<span class="badge badge-lane">⚔ ${name}のレーン戦キル率 ${c.laneWr.toFixed(1)}%</span>`);
+  }
+  // 旧データ(wr=カウンター側勝率)が残っている場合は反転して暫定表示
+  if (!chips.length && typeof c.wr === "number") {
+    chips.push(`<span class="wr-label">${name}の勝率 ${(100 - c.wr).toFixed(1)}%</span>`);
+  }
+  // サンプル数(集計の信頼性の目安)
+  if (typeof c.games === "number") {
+    chips.push(`<span class="wr-label">サンプル ${c.games}戦</span>`);
+  }
+  const meta = chips.length ? `<div class="counter-meta">${chips.join("")}</div>` : "";
+  return `
+    <div class="cd-head">
+      <img src="${champImg(c.id)}" alt="${champName(c.id)}"
+           onerror="this.style.visibility='hidden'">
+      <span class="cd-name">${champName(c.id)}</span>
+    </div>
+    ${meta}
+    <h3 class="reason-title">⚔ カウンターとなる理由</h3>
+    <p>${c.reason}</p>
+    <h3 class="plan-title">🛡 ${name}側の対策(被害を最小限に抑えるには)</h3>
+    <p>${c.plan}</p>`;
+}
+
 function renderResult(champ) {
   const laneLabel = LANES.find((l) => l.id === state.lane)?.label ?? "";
   const name = champName(champ.id);
@@ -90,46 +133,75 @@ function renderResult(champ) {
   list.innerHTML = "";
 
   if (!champ.counters || champ.counters.length === 0) {
-    list.innerHTML = `<div class="empty-note">このチャンピオンのカウンターデータは未登録です。data/ 配下のロール別ファイルに追記することで拡張できます。</div>`;
+    list.innerHTML = `<div class="empty-note">${name} は、このパッチの採用基準(対面100戦以上・選択チャンピオン側の勝率50%未満)を満たす明確なカウンターがいません(支配的なチャンピオンです)。</div>`;
     return;
   }
 
-  champ.counters.forEach((c) => {
-    // バッジは「選択した ${name} 視点での不利フェーズ」を表す
-    const laneBadge = `<span class="badge badge-lane">⚔ ${name}はレーン戦が不利</span>`;
-    const gameBadge = `<span class="badge badge-game">🏆 ${name}は試合が長引くと不利</span>`;
-    const badges =
-      c.type === "both"
-        ? `<span class="badge badge-lane">⚔ ${name}は終始不利</span>`
-        : c.type === "lane"
-        ? laneBadge
-        : c.type === "game"
-        ? gameBadge
-        : "";
-    // wr はカウンター側勝率なので、選択した ${name} 視点に反転して表示
-    const wrLabel =
-      typeof c.wr === "number"
-        ? `<span class="wr-label">${name}の勝率 ${(100 - c.wr).toFixed(1)}%</span>`
-        : "";
-    const meta = badges || wrLabel ? `<div class="counter-meta">${badges}${wrLabel}</div>` : "";
+  const master = document.createElement("div");
+  master.className = "cl-master";
+  const detail = document.createElement("div");
+  detail.className = "cl-detail counter-body";
 
-    const card = document.createElement("article");
-    card.className = "counter-card";
-    card.innerHTML = `
-      <div class="portrait">
-        <img src="${champImg(c.id)}" alt="${champName(c.id)}" loading="lazy"
-             onerror="this.style.display='none'">
-        <span class="counter-name">${champName(c.id)}</span>
-      </div>
-      <div class="counter-body">
-        ${meta}
-        <h3 class="reason-title">⚔ カウンターとなる理由</h3>
-        <p>${c.reason}</p>
-        <h3 class="plan-title">🛡 ${name}側の対策(被害を最小限に抑えるには)</h3>
-        <p>${c.plan}</p>
-      </div>`;
-    list.appendChild(card);
+  function selectItem(item) {
+    master.querySelectorAll(".cl-item.open").forEach((el) => el.classList.remove("open"));
+    item.classList.add("open");
+  }
+
+  champ.counters.forEach((c, i) => {
+    const item = document.createElement("div");
+    item.className = "cl-item" + (i === 0 ? " open" : "");
+
+    // 副情報: レーンキル率(あれば) · サンプル数(あれば)。対面勝率を軸に保つため小さく muted
+    const sub = [];
+    if (typeof c.laneWr === "number") sub.push(`レーン戦キル率 ${c.laneWr.toFixed(1)}%`);
+    if (typeof c.games === "number") sub.push(`${c.games}戦`);
+    const subLine = sub.length ? `<span class="cl-sub">${sub.join(" · ")}</span>` : "";
+
+    const wrCell =
+      typeof c.gameWr === "number"
+        ? `<span class="cl-wr"><b>${c.gameWr.toFixed(1)}%</b>${wrBar(c.gameWr)}${subLine}</span>`
+        : typeof c.wr === "number"
+        ? `<span class="cl-wr"><b>${(100 - c.wr).toFixed(1)}%</b>${subLine}</span>`
+        : `<span class="cl-wr">${subLine}</span>`;
+
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "cl-row";
+    row.innerHTML = `
+      <img class="cl-thumb" src="${champImg(c.id)}" alt="${champName(c.id)}" loading="lazy"
+           onerror="this.style.visibility='hidden'">
+      <span class="cl-name">${champName(c.id)}</span>
+      ${wrCell}
+      <span class="cl-chev" aria-hidden="true">▾</span>`;
+
+    const inline = document.createElement("div");
+    inline.className = "cl-inline counter-body";
+    inline.innerHTML = counterDetailHTML(name, c);
+
+    row.addEventListener("click", () => {
+      const mobile = window.matchMedia("(max-width: 560px)").matches;
+      if (mobile) {
+        // アコーディオン: 開いていれば閉じる、そうでなければ単一展開
+        if (item.classList.contains("open")) {
+          item.classList.remove("open");
+        } else {
+          selectItem(item);
+        }
+      } else {
+        // マスター/詳細: 選択して右ペインを差し替え
+        selectItem(item);
+        detail.innerHTML = counterDetailHTML(name, c);
+      }
+    });
+
+    item.appendChild(row);
+    item.appendChild(inline);
+    master.appendChild(item);
   });
+
+  detail.innerHTML = counterDetailHTML(name, champ.counters[0]);
+  list.appendChild(master);
+  list.appendChild(detail);
 }
 
 renderPatchBadge();

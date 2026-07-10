@@ -11,6 +11,7 @@
     <h1>LoL カウンターピック検索</h1>
     <p class="subtitle">ロールとチャンピオンを選ぶと、カウンターと「理由」「対策」を表示します</p>
     <p id="patch-badge" class="patch-badge"></p>
+    <p id="source-badge" class="source-badge"></p>
   </header>
 
   <main>
@@ -29,7 +30,7 @@
     <!-- STEP 3: 結果表示 -->
     <section id="result-section" class="step-section" hidden>
       <h2 class="step-title"><span class="step-num">3</span> カウンター情報</h2>
-      <p class="type-legend">バッジは「選択したチャンピオンがどのフェーズで不利か」を表します。⚔ レーン戦が不利 / 🏆 試合が長引くと不利 / 終始不利。「○○の勝率」= 選択したチャンピオンがこの相手と対面した時のゲーム全体の勝率(op.gg Emerald+)で、50%を下回るほど不利です。</p>
+      <p class="type-legend">数値はすべて<strong>選択したチャンピオン視点</strong>の勝率で、50%を下回るほど不利(=相手が強いカウンター)です。🏆 対面勝率 = その相手と対面したゲームの勝率 / ⚔ レーン戦キル率 = レーン内のキルの取り分(ジャングルは集計なし)。</p>
       <div id="result-header" class="result-header"></div>
       <div id="counter-list" class="counter-list"></div>
     </section>
@@ -37,7 +38,7 @@
 
   <footer class="site-footer">
     <p>⚠ カウンター相性はパッチ・ビルド・プレイヤースキルで変動します。本サービスの解説は、パッチに依存しにくい「スキルの仕組み上の相性」を中心に記載しています。</p>
-    <p>収録基準: 各ロールでのピック率1%以上(op.gg Emerald+集計)。基準未満でも一度収録したチャンピオンは原則残しています。</p>
+    <p>収録基準: 各ロールでのピック率1%以上(op.gg Platinum+集計)。基準未満でも一度収録したチャンピオンは原則残しています。</p>
     <p>※ ボットレーン(ADC/サポート)は2v2のため、相方の組み合わせで相性が大きく変わる点に注意してください。</p>
     <p class="credit">Champion images: Riot Games Data Dragon. This project is not endorsed by Riot Games.</p>
   </footer>
@@ -47,20 +48,11 @@
   <script src="data/meta.js"></script>
   <script src="data/champions.js"></script>
   <!-- レーン別カウンターデータ(ファイル追加だけで拡張可能) -->
-  <script src="data/top-a.js"></script>
-  <script src="data/top-b.js"></script>
-  <script src="data/top-c.js"></script>
-  <script src="data/jungle-a.js"></script>
-  <script src="data/jungle-b.js"></script>
-  <script src="data/jungle-c.js"></script>
-  <script src="data/mid-a.js"></script>
-  <script src="data/mid-b.js"></script>
-  <script src="data/mid-c.js"></script>
+  <script src="data/top.js"></script>
+  <script src="data/jungle.js"></script>
+  <script src="data/mid.js"></script>
   <script src="data/adc.js"></script>
-  <script src="data/adc-b.js"></script>
-  <script src="data/support-a.js"></script>
-  <script src="data/support-b.js"></script>
-  <script src="data/support-c.js"></script>
+  <script src="data/support.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
