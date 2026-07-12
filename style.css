@@ -338,6 +338,29 @@ main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
 
 .counter-body p { font-size: 0.92rem; color: var(--text); }
 
+/* 実データ補強済みの対策に付く出典バッジ(未補強はバッジ無し) */
+.ev-badge {
+  margin-top: 12px;
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px;
+  background: rgba(200, 170, 110, 0.06);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.ev-badge .ev-src { color: var(--gold); font-weight: 600; }
+.ev-badge .ev-patch { font-variant-numeric: tabular-nums; }
+.ev-badge .ev-stale {
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 0.72rem;
+  margin-left: 2px;
+}
+
 .empty-note {
   color: var(--text-dim);
   background: var(--bg-card);

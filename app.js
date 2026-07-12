@@ -114,7 +114,17 @@ function counterDetailHTML(name, c) {
     <h3 class="reason-title">⚔ カウンターとなる理由</h3>
     <p>${c.reason}</p>
     <h3 class="plan-title">🛡 ${name}側の対策(被害を最小限に抑えるには)</h3>
-    <p>${c.plan}</p>`;
+    <p>${c.plan}</p>
+    ${evidenceBadge(c.ev)}`;
+}
+
+// 実データ補強済みエントリの出典表示(未補強＝キットのみはバッジ無しで正直に区別)
+function evidenceBadge(ev) {
+  if (!ev || !Array.isArray(ev.sites) || ev.sites.length === 0) return "";
+  const srcs = ev.sites.map((s) => `<span class="ev-src">${s}</span>`).join("・");
+  const patch = ev.patch ? ` <span class="ev-patch">patch ${ev.patch}</span>` : "";
+  const stale = ev.stale ? ` <span class="ev-stale">旧ソース</span>` : "";
+  return `<div class="ev-badge" title="この対策は実在の攻略ソースの記述で裏付けられています">📎 対策の裏付け: ${srcs}${patch}${stale}</div>`;
 }
 
 function renderResult(champ) {
